@@ -86,13 +86,19 @@ class BranchesController extends Controller
         if( Yii::$app->user->can('create-branch')){
             $model = new Branches();
 
+            if(Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())){
+
+                Yii::$app->response->format = 'json';
+                return ActiveForm::validate($model);
+            }
+
             if ($model->load(Yii::$app->request->post())) {
                 $model->branch_created_date = date('Y-m-d h:m:s');
                 if($model->save()){
                     echo 1;
                 } else {
                     echo 0;
-                }
+                } 
                 //return $this->redirect(['view', 'id' => $model->branch_id]);
             } else {
                 return $this->renderAjax('create', [
@@ -136,7 +142,7 @@ class BranchesController extends Controller
             $branch->compnies_company_id = $rowData[0][1];
             $branch->branch_name = $rowData[0][2];
             $branch->branch_address = $rowData[0][3];
-            $branch->branch_created_date = date('Y:m:d H:i:s');
+            $branch->branch_created_date = date('Y-m-d H:i:s');
             $branch->branch_status = $rowData[0][4];
             $branch->save();
 
@@ -195,6 +201,28 @@ class BranchesController extends Controller
         else {
             echo "<option> - </option>";
         }
+    }
+
+    public function actionUpload(){
+        $fileName = 'file';
+        $uploadPath = '/uploads';
+
+        if (isset($_FILES[$fileName])) {
+            $file = \yii\web\UploadedFile::getInstanceByName($fileName);
+
+            //Print file data
+            //print_r($file);
+
+            if ($file->saveAs($uploadPath . '/' . $file->name)) {
+                //Now save file data to database
+
+                echo \yii\helpers\Json::encode($file);
+            }
+    } else {
+        return $this->render('uploads');
+    }
+
+    return false;
     }
 
     /**

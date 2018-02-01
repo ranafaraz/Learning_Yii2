@@ -5,6 +5,7 @@ use kartik\grid\GridView;
 use yii\widgets\Pjax;
 use yii\bootstrap\Modal;
 use yii\helpers\Url;
+use kartik\export\ExportMenu;
 
 /* @var $this yii\web\View */
 /* @var $searchModel backend\models\BranchesSearch */
@@ -32,6 +33,23 @@ $this->params['breadcrumbs'][] = $this->title;
         echo  "<div id='modalContent'></div>";
 
         Modal::end();
+
+    ?>
+
+    <?php 
+
+        $gridColumns = [
+            'branch_name',
+            'branch_address',
+            'branch_created_date',
+            'branch_status'
+        ];
+
+        //Renders export dropDown menu
+        echo ExportMenu::widget([
+                'dataProvider' => $dataProvider,
+                'columns' => $gridColumns
+            ]);
 
     ?>
 
